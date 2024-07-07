@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "tlozwomcfabric",
+  "version": "${version}",
+  "name": "TlozWomcFabric",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/marvi/TlozWomcFabric"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/tlozwomcfabric/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.villagerzock.tlozwomcfabric.client.TlozWomcFabricClient"
+    ],
+    "main": [
+      "net.villagerzock.tlozwomcfabric.TlozWomcFabric"
+    ]
+  },
+  "mixins": [
+    "tlozwomcfabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
