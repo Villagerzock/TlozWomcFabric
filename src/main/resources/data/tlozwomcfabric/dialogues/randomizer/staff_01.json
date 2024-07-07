@@ -1,0 +1,13 @@
+[
+  {
+    "text":"dialogues.tlozwomcfabric.randomizer.staff_01.text",
+    "name": "Villagerzock",
+    "buttons": [
+      {
+        "text": "yes",
+        "command": "give @s tlozwomcfabric:acorn",
+        "should_close": false
+      }
+    ]
+  }
+]

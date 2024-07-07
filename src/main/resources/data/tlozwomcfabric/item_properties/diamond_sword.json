@@ -1,0 +1,8 @@
+{
+  "item": "minecraft:diamond_sword",
+  "fuse": {
+    "damage": 50,
+    "element": "none",
+    "strenght": 10
+  }
+}

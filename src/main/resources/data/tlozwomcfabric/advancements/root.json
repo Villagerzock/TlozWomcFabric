@@ -1,0 +1,17 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:diamond"
+    },
+    "title": "TlozWomc",
+    "description": "All The Achievements Around TlozWomc",
+    "background": "minecraft:item/dirt",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "Main": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

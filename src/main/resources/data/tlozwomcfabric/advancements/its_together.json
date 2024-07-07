@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_sword",
+      "nbt": "{fuseditem:{item:'minecraft:diamond_sword'}}"
+    },
+    "title": "Its!... Together?",
+    "description": "Fuse an Item to a Weapon",
+    "background": "minecraft:item/dirt",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "tlozwomcfabric:root",
+  "criteria": {
+    "Main": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "nbt": "{fuseditem:{}}"
+          }
+        ]
+      }
+    }
+  }
+}
