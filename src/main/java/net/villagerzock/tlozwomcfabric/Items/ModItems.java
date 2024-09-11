@@ -2,6 +2,7 @@ package net.villagerzock.tlozwomcfabric.Items;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
@@ -17,7 +18,7 @@ public class ModItems {
     public static final Item AEROCUDA_EYEBALL = registerItem("aerocuda_eyeball", new Item(new Item.Settings()));
     public static final Item AEROCUDA_WING = registerItem("aerocuda_wing", new Item(new Item.Settings()));
     public static final Item AMBER = registerItem("amber", new Item(new Item.Settings()));
-    public static final Item ANCIENT_AROWANA = registerItem("ancient_arowana", new Item(new Item.Settings()));
+    public static final Item ANCIENT_AROWANA = registerItem("ancient_arowana", new FilledMapItem(new Item.Settings()));
     public static final Item ANCIENT_BLADE = registerItem("ancient_blade", new Item(new Item.Settings()));
     public static final Item AMORANTH = registerItem("amoranth", new Item(new Item.Settings()));
     public static final Item ARMORED_CARP = registerItem("armored_carp", new Item(new Item.Settings()));

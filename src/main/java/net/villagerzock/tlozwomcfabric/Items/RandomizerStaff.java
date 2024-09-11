@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.villagerzock.tlozwomcfabric.TlozWomcFabric;
+import net.villagerzock.tlozwomcfabric.client.screens.LinksInventory;
 import net.villagerzock.tlozwomcfabric.client.screens.TextBoxScreen;
 
 public class RandomizerStaff extends Item {
@@ -19,7 +20,7 @@ public class RandomizerStaff extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (world.isClient){
-            MinecraftClient.getInstance().setScreen(new TextBoxScreen(new Identifier(TlozWomcFabric.MODID,"dialogues/randomizer/staff_01.json")));
+            MinecraftClient.getInstance().setScreen(new LinksInventory(user));
         }
         return TypedActionResult.success(user.getStackInHand(hand));
     }

@@ -35,6 +35,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.villagerzock.tlozwomcfabric.Data.DialogueDataHandler;
 import net.villagerzock.tlozwomcfabric.Data.Elements;
 import net.villagerzock.tlozwomcfabric.Data.ItemProperties;
@@ -56,11 +57,17 @@ public class TlozWomcFabric implements ModInitializer {
     public static final Identifier USE_ABILITY_PACKET_ID = new Identifier(TlozWomcFabric.MODID, "use_ability");
     public static final Identifier RUN_COMMAND_ON_SERVER = new Identifier(TlozWomcFabric.MODID, "run_command_on_server");
     public static final Identifier OPEN_DIALOGUE_ON_CLIENT = new Identifier(TlozWomcFabric.MODID, "open_dialogue_on_client");
+    public static final Identifier DROP_ITEM_STACK_FROM_INVENTORY = new Identifier(TlozWomcFabric.MODID, "drop_item_stack_from_inventory");
     public static final Logger logger = LoggerFactory.getLogger(MODID);
     @Override
     public void onInitialize() {
         ModItems.registerModItems();
         CommandRegistrationCallback.EVENT.register(ModCommands::registerCommands);
+        ServerTickEvents.END_WORLD_TICK.register(server -> {
+            int phase = server.getMoonPhase();
+            if (phase == 8){
+            }
+        });
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
@@ -78,7 +85,8 @@ public class TlozWomcFabric implements ModInitializer {
                             double fuse_damage = fuse.get("damage").getAsDouble();
                             Elements element = Elements.valueOf(fuse.get("element").getAsString().toUpperCase());
                             int fuse_elemet_strenght = fuse.get("strenght").getAsInt();
-                            ItemProperties.GlobalProperties.put(item, new ItemProperties(fuse_damage, element, fuse_elemet_strenght));
+                            int fuse_durability = fuse.get("durability").getAsInt();
+                            ItemProperties.GlobalProperties.put(item, new ItemProperties(fuse_damage, element, fuse_elemet_strenght,fuse_durability));
                         }catch (NullPointerException e){
                             throw new RuntimeException(e);
                         }
@@ -127,50 +135,66 @@ public class TlozWomcFabric implements ModInitializer {
                 throw new RuntimeException(e);
             }
         }));
+        ServerPlayNetworking.registerGlobalReceiver(DROP_ITEM_STACK_FROM_INVENTORY, ((server, player, handler, buf, responseSender) -> {
+            ItemStack stack = buf.readItemStack();
+            ItemStack item;
+            if (stack.getCount() > 64){
+                item = new ItemStack(stack.getItem(), 64);
+            }else {
+                item = stack;
+            }
+            World world = player.getWorld();
+            player.dropItem(item, true, true);
+            int slot = player.getInventory().getSlotWithStack(item);
+            if (slot >= 0){
+                player.getInventory().setStack(slot, ItemStack.EMPTY);
+            }
+
+        }));
         ServerPlayNetworking.registerGlobalReceiver(USE_ABILITY_PACKET_ID, ((server, player, handler, buf, responseSender) -> {
             server.execute(() -> {
                 System.out.println("UseAbility");
                 ItemStack stack = player.getInventory().getMainHandStack();
                 if (stack.hasNbt()){
                     if (!stack.getNbt().contains("fuseditem")){
-                        ItemEntity entity =findNearestItemEntity(player, 5d);
-                        ItemStack FusedItem = entity.getStack();
-                        double AttackDamage = 1.0;
-                        if(FusedItem.getItem() instanceof SwordItem){
-                            AttackDamage = ((SwordItem) FusedItem.getItem()).getAttackDamage();
-                        }
-
-                        NbtCompound newNbt = new NbtCompound();
-                        String NameSpace = Registries.ITEM.getId(FusedItem.getItem()).getNamespace();
-                        String ItemName = FusedItem.getItem().toString();
-                        ItemProperties properties = ItemProperties.GlobalProperties.get(Registries.ITEM.get(new Identifier(NameSpace,ItemName)));
-                        if(properties != null){
-                            AttackDamage = properties.getFuseDamage();
-                        }
-                        newNbt.putString("item",NameSpace + ":" + ItemName);
-                        newNbt.putDouble("attack_damage", AttackDamage);
-                        System.out.println(NameSpace);
-                        stack.getNbt().put("fuseditem", newNbt);
-                        player.getInventory().setStack(player.getInventory().selectedSlot,stack);
+                        fuse(player,stack);
                     }
                 }else {
-                    ItemEntity entity =findNearestItemEntity(player, 5d);
-                    ItemStack FusedItem = entity.getStack();
-                    double AttackDamage = 1.0;
-                    if(FusedItem.getItem() instanceof SwordItem){
-                        AttackDamage = ((SwordItem) FusedItem.getItem()).getAttackDamage();
-                    }
-
-                    NbtCompound newNbt = new NbtCompound();
-                    newNbt.putString("item",FusedItem.getItem().getRegistryEntry().toString());
-                    newNbt.putDouble("attack_damage", AttackDamage);
-                    System.out.println(FusedItem.getItem().getRegistryEntry().toString());
-                    stack.getNbt().put("fuseditem", newNbt);
-                    player.getInventory().setStack(player.getInventory().selectedSlot,stack);
+                    fuse(player,stack);
                 }
                 stack.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier("fuse_damage", stack.getNbt().getCompound("fuseditem").getDouble("attack_damage"), EntityAttributeModifier.Operation.ADDITION), EquipmentSlot.MAINHAND);
             });
         }));
+    }
+
+    private  void fuse(ServerPlayerEntity player, ItemStack stack){
+        ItemEntity entity =findNearestItemEntity(player, 5d);
+        ItemStack FusedItem = entity.getStack();
+        double AttackDamage = 1.0;
+        int durability = 0;
+        if(FusedItem.getItem() instanceof SwordItem){
+            AttackDamage = ((SwordItem) FusedItem.getItem()).getAttackDamage();
+            durability = ((SwordItem) FusedItem.getItem()).getMaxDamage();
+        }
+        if (stack.getItem() instanceof SwordItem){
+            AttackDamage += ((SwordItem) stack.getItem()).getAttackDamage();
+        }
+        NbtCompound newNbt = new NbtCompound();
+        String NameSpace = Registries.ITEM.getId(FusedItem.getItem()).getNamespace();
+        String ItemName = FusedItem.getItem().toString();
+        ItemProperties properties = ItemProperties.GlobalProperties.get(Registries.ITEM.get(new Identifier(NameSpace,ItemName)));
+        if(properties != null){
+            AttackDamage += properties.getFuseDamage();
+            durability += properties.getDurability();
+        }
+        newNbt.putString("item",NameSpace + ":" + ItemName);
+        newNbt.putDouble("attack_damage", AttackDamage);
+        System.out.println(NameSpace);
+        stack.getNbt().put("fuseditem", newNbt);
+
+        stack.setDamage(-durability);
+        player.getInventory().setStack(player.getInventory().selectedSlot,stack);
+        entity.kill();
     }
     private ItemEntity findNearestItemEntity(ServerPlayerEntity player, double radius) {
         Vec3d playerPos = player.getPos();
@@ -236,29 +260,27 @@ public class TlozWomcFabric implements ModInitializer {
         dispatcher.execute(parseResults);
     }
     private void serverTick(){
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (ServerWorld world : server.getWorlds()){
-                for (ServerPlayerEntity player : world.getPlayers()){
-                    for(int i = 0; i<player.getInventory().size(); i++){
-                        ItemStack stack = player.getInventory().getStack(i);
-                        if (stack.hasNbt()){
-                            if (stack.getNbt().contains("fuseditem")){
-                                NbtCompound fuseditem = stack.getNbt().getCompound("fuseditem");
-                                Double attackDamage = fuseditem.getDouble("attack_damage");
-                                if(stack.getItem() instanceof SwordItem){
-                                    SwordItem item = (SwordItem) stack.getItem();
-                                    attackDamage += item.getAttackDamage();
-                                }
-                                EntityAttributeModifier modifier = new EntityAttributeModifier("fused_damage", attackDamage, EntityAttributeModifier.Operation.ADDITION);
-                                //AttributeModifiers.Name
-                                boolean isThere = NbtListContainsCompoundContains(stack.getNbt().getList("AttributeModifiers", NbtElement.COMPOUND_TYPE));
-                                //boolean isThere = !stack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsValue(modifier);
-                                if (isThere){
-                                    stack.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, modifier , EquipmentSlot.MAINHAND);
-                                    System.out.println("HAllO");
-                                }
-                                System.out.println(!isThere);
+        ServerTickEvents.END_WORLD_TICK.register(serverWorld -> {
+            for (ServerPlayerEntity player : serverWorld.getPlayers()){
+                for(int i = 0; i<player.getInventory().size(); i++){
+                    ItemStack stack = player.getInventory().getStack(i);
+                    if (stack.hasNbt()){
+                        if (stack.getNbt().contains("fuseditem")){
+                            NbtCompound fuseditem = stack.getNbt().getCompound("fuseditem");
+                            Double attackDamage = fuseditem.getDouble("attack_damage");
+                            if(stack.getItem() instanceof SwordItem){
+                                SwordItem item = (SwordItem) stack.getItem();
+                                attackDamage += item.getAttackDamage();
                             }
+                            EntityAttributeModifier modifier = new EntityAttributeModifier("fused_damage", attackDamage, EntityAttributeModifier.Operation.ADDITION);
+                            //AttributeModifiers.Name
+                            boolean isThere = NbtListContainsCompoundContains(stack.getNbt().getList("AttributeModifiers", NbtElement.COMPOUND_TYPE));
+                            //boolean isThere = !stack.getAttributeModifiers(EquipmentSlot.MAINHAND).containsValue(modifier);
+                            if (isThere){
+                                stack.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, modifier , EquipmentSlot.MAINHAND);
+                                System.out.println("HAllO");
+                            }
+                            System.out.println(!isThere);
                         }
                     }
                 }

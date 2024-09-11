@@ -1,5 +1,8 @@
 package net.villagerzock.tlozwomcfabric.client;
 
+import com.google.gson.JsonObject;
+import net.minecraft.registry.Registries;
+
 import java.util.List;
 
 public class Dialogue {
@@ -22,5 +25,8 @@ public class Dialogue {
 
     public String getText() {
         return text;
+    }
+    public static Dialogue serializeFromJsonObjetc(JsonObject object){
+        return new Dialogue("hallo",new DialogueButton[]{},"???");
     }
 }

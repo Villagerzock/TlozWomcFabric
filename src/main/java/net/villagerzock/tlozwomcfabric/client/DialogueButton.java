@@ -28,7 +28,9 @@ public class DialogueButton {
                         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                         buf.writeString(CommandToRun);
                         ClientPlayNetworking.send(TlozWomcFabricClient.RUN_COMMAND_ON_SERVER,buf);
-                        screen.nextPage();
+                        if (shouldClose){
+                            screen.nextPage();
+                        }
                     }
                 }
             }

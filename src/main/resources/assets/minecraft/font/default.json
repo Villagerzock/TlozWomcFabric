@@ -1,0 +1,112 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/esc.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0000"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/f1.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0001"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/f2.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0002"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/f3.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0003"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/f4.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0004"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/f5.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0005"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/f6.png",
+      "height": 16,
+      "ascent": 8,
+      "chars": [
+        "\u0006"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/w.png",
+      "height": 16,
+      "ascent": 10,
+      "chars": [
+        "\u0007"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/up.png",
+      "height": 16,
+      "ascent": 10,
+      "chars": [
+        "\u0008"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/left.png",
+      "height": 16,
+      "ascent": 10,
+      "chars": [
+        "\u0009"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/right.png",
+      "height": 16,
+      "ascent": 10,
+      "chars": [
+        "\u000A"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "tlozwomcfabric:font/down.png",
+      "height": 16,
+      "ascent": 10,
+      "chars": [
+        "\u000B"
+      ]
+    }
+  ]
+}

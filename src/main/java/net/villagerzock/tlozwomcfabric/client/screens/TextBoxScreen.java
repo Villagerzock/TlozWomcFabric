@@ -62,7 +62,12 @@ public class TextBoxScreen extends Screen {
         return false;
     }
 
-    private void generateButtons() {
+    private void generateButtons(boolean shouldDelete) {
+        if (shouldDelete){
+            for (int i = 0; i<dialogues[page-1].getButtons().length; i++){
+                remove(buttons[i]);
+            }
+        }
         buttons = new DialogueButtonWidget[dialogues[page].getButtons().length];
         for (int i = 0; i<dialogues[page].getButtons().length;i++){
             buttons[i] = dialogues[page].getButtons()[i].getAsWidget();
@@ -76,7 +81,7 @@ public class TextBoxScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        generateButtons();
+        generateButtons(false);
     }
 
     @Override
@@ -145,7 +150,7 @@ public class TextBoxScreen extends Screen {
         if (arrowAnim){
             if (page < dialogues.length - 1){
                 page++;
-                generateButtons();
+                generateButtons(true);
                 arrowAnim = false;
                 writingTick = 0;
             }else {
