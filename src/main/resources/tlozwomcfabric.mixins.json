@@ -7,7 +7,12 @@
   ],
   "client": [
     "ItemRendererAccessor",
-    "ItemRendererMixin"
+    "ItemRendererMixin",
+    "SplashOverlayMixin",
+    "SplashOverlayMixinAccessor",
+    "LevelLoadingScreenMixin",
+    "ProgressScreenMixin",
+    "PlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,7 @@
 package net.villagerzock.tlozwomcfabric.client.screens;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
@@ -8,11 +9,14 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 
-public class LinksInventoryHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
-    public LinksInventoryHandler(ScreenHandlerType<?> screenHandlerType, int i) {
-        super(screenHandlerType, i);
+public class LinksInventoryHandler extends PlayerScreenHandler {
+
+
+    public LinksInventoryHandler(PlayerInventory inventory, boolean onServer, PlayerEntity owner) {
+        super(inventory, onServer, owner);
     }
 
     @Override

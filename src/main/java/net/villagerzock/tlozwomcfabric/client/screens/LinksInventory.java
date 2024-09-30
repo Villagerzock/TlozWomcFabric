@@ -7,19 +7,21 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.villagerzock.tlozwomcfabric.Mixins.PlayerEntityMixin;
 
-public class LinksInventory extends AbstractInventoryScreen<PlayerScreenHandler> {
-    private static final Identifier ITEM_TAB = new Identifier("minecraft","textures/gui/container/creative_inventory/tab_items.png");
-    private static final Identifier TABS = new Identifier("minecraft","textures/gui/container/creative_inventory/tabs.png");
+public class LinksInventory extends AbstractInventoryScreen<LinksInventoryHandler> {
+    private static final Identifier INVENTORY = new Identifier("tlozwomcfabric","textures/gui/inventory.png");
     protected int backgroundWidth = 195;
     protected int backgroundHeight = 136;
-    public LinksInventory(PlayerEntity player) {
-        super(player.playerScreenHandler, player.getInventory(), Text.translatable("container.crafting"));
+
+    public LinksInventory(PlayerEntity user) {
+        super(new LinksInventoryHandler(user.getInventory(),!user.getEntityWorld().isClient,user), user.getInventory(), Text.literal(""));
     }
+
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int x = (width - backgroundWidth) / 2;
         int y = (height - backgroundHeight) /2;
-        context.drawTexture(ITEM_TAB,x,y,0,0,backgroundWidth,backgroundHeight);
+        context.drawTexture(INVENTORY, x, y, 0, 0, this.backgroundWidth, this.backgroundHeight);
     }
 }

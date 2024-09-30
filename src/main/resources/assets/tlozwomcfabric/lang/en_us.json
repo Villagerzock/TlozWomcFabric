@@ -1,5 +1,9 @@
 {
   "dialogues.tlozwomcfabric.randomizer.staff_01.text.01": "Hello i'm Villagerzock\ndo you want to activate §c§lWaikuSys §r§3v1.0\n§rUse \u0007",
   "dialogues.tlozwomcfabric.randomizer.staff_01.text.02": "Ok do you want to Configurate the\n §3§lThe Legend of Zelda: §r§4World of Minecraft\n §rmod",
-  "command.exception.dialogue.wrong": "doesn't exist. try using one from the suggestions"
+  "command.exception.dialogue.wrong": "doesn't exist. try using one from the suggestions",
+
+
+  "texts.tips.1.title": "Dont Let Trees Float",
+  "texts.tips.1.desc": "Your World doesnt look nice if trees are floating around"
 }

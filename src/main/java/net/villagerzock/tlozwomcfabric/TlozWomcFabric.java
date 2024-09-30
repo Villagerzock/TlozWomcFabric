@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.Item;
@@ -32,6 +33,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -58,6 +60,8 @@ public class TlozWomcFabric implements ModInitializer {
     public static final Identifier RUN_COMMAND_ON_SERVER = new Identifier(TlozWomcFabric.MODID, "run_command_on_server");
     public static final Identifier OPEN_DIALOGUE_ON_CLIENT = new Identifier(TlozWomcFabric.MODID, "open_dialogue_on_client");
     public static final Identifier DROP_ITEM_STACK_FROM_INVENTORY = new Identifier(TlozWomcFabric.MODID, "drop_item_stack_from_inventory");
+    public static final Identifier EQUIP_ITEM_IN_SLOT = new Identifier(TlozWomcFabric.MODID, "equip_item_in_slot");
+    public static final Identifier EQUIP_ITEM_IN_SLOT_TO_OFF = new Identifier(TlozWomcFabric.MODID, "equip_item_in_slot_to_off");
     public static final Logger logger = LoggerFactory.getLogger(MODID);
     @Override
     public void onInitialize() {
@@ -137,19 +141,25 @@ public class TlozWomcFabric implements ModInitializer {
         }));
         ServerPlayNetworking.registerGlobalReceiver(DROP_ITEM_STACK_FROM_INVENTORY, ((server, player, handler, buf, responseSender) -> {
             ItemStack stack = buf.readItemStack();
-            ItemStack item;
-            if (stack.getCount() > 64){
-                item = new ItemStack(stack.getItem(), 64);
-            }else {
-                item = stack;
-            }
-            World world = player.getWorld();
-            player.dropItem(item, true, true);
-            int slot = player.getInventory().getSlotWithStack(item);
-            if (slot >= 0){
-                player.getInventory().setStack(slot, ItemStack.EMPTY);
-            }
-
+            int Slot = buf.readVarInt();
+            //ItemEntity item = player.dropStack(stack);
+            ItemEntity item = player.dropItem(stack, true);
+            //item.move(MovementType.SELF, Vec3d.fromPolar(player.getHeadYaw(),player.getPitch()).multiply(2));
+            player.getInventory().removeStack(Slot);
+        }));
+        ServerPlayNetworking.registerGlobalReceiver(EQUIP_ITEM_IN_SLOT, ((server, player, handler, buf, responseSender) -> {
+            ItemStack stack = buf.readItemStack();
+            int Slot = buf.readVarInt();
+            ItemStack mainhand = player.getStackInHand(Hand.MAIN_HAND).copy();
+            player.getInventory().setStack(Slot,mainhand);
+            player.setStackInHand(Hand.MAIN_HAND,stack);
+        }));
+        ServerPlayNetworking.registerGlobalReceiver(EQUIP_ITEM_IN_SLOT_TO_OFF, ((server, player, handler, buf, responseSender) -> {
+            ItemStack stack = buf.readItemStack();
+            int Slot = buf.readVarInt();
+            ItemStack mainhand = player.getStackInHand(Hand.OFF_HAND).copy();
+            player.getInventory().setStack(Slot,mainhand);
+            player.setStackInHand(Hand.OFF_HAND,stack);
         }));
         ServerPlayNetworking.registerGlobalReceiver(USE_ABILITY_PACKET_ID, ((server, player, handler, buf, responseSender) -> {
             server.execute(() -> {

@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.gl.VertexBuffer;
@@ -37,6 +38,7 @@ public class TlozWomcFabricClient implements ClientModInitializer {
     public static KeyBinding shieldKeyBind;
     public static KeyBinding swordKeyBind;
     public static KeyBinding whistleKeyBind;
+    public static DrawContext context = null;
     public static final Identifier USE_ABILITY_PACKET_ID = new Identifier(TlozWomcFabric.MODID, "use_ability");
     public static final Identifier ACTIVATE_ABILITY = new Identifier(TlozWomcFabric.MODID, "activate_ability");
     public static final Identifier RUN_COMMAND_ON_SERVER = new Identifier(TlozWomcFabric.MODID, "run_command_on_server");
@@ -83,12 +85,32 @@ public class TlozWomcFabricClient implements ClientModInitializer {
             while (materialsKeyBind.wasPressed()){
                 client.setScreen(new QuickPicker(0, new QuickPickerResult() {
                     @Override
-                    public void run(ItemStack item, QuickPickerCloseReason reason) {
+                    public void run(ItemStack item, int slot,QuickPickerCloseReason reason) {
                         if (reason == QuickPickerCloseReason.EQUIP){
-                            ClientPlayNetworking.send(DROP_ITEM_STACK_FROM_INVENTORY, PacketByteBufs.create().writeItemStack(item));
+                            ClientPlayNetworking.send(DROP_ITEM_STACK_FROM_INVENTORY, PacketByteBufs.create().writeItemStack(item).writeVarInt(slot));
                         }
                     }
                 },InputUtil.fromTranslationKey(materialsKeyBind.getBoundKeyTranslationKey()).getCode()));
+            }
+            while (swordKeyBind.wasPressed()){
+                client.setScreen(new QuickPicker(1, new QuickPickerResult() {
+                    @Override
+                    public void run(ItemStack item, int slot, QuickPickerCloseReason reason) {
+                        if (reason == QuickPickerCloseReason.EQUIP){
+                            ClientPlayNetworking.send(TlozWomcFabric.EQUIP_ITEM_IN_SLOT, PacketByteBufs.create().writeItemStack(item).writeVarInt(slot));
+                        }
+                    }
+                },InputUtil.fromTranslationKey(swordKeyBind.getBoundKeyTranslationKey()).getCode()));
+            }
+            while (shieldKeyBind.wasPressed()){
+                client.setScreen(new QuickPicker(2, new QuickPickerResult() {
+                    @Override
+                    public void run(ItemStack item, int slot, QuickPickerCloseReason reason) {
+                        if (reason == QuickPickerCloseReason.EQUIP){
+                            ClientPlayNetworking.send(TlozWomcFabric.EQUIP_ITEM_IN_SLOT_TO_OFF, PacketByteBufs.create().writeItemStack(item).writeVarInt(slot));
+                        }
+                    }
+                },InputUtil.fromTranslationKey(shieldKeyBind.getBoundKeyTranslationKey()).getCode()));
             }
         });
         ClientPlayNetworking.registerGlobalReceiver(TlozWomcFabric.OPEN_DIALOGUE_ON_CLIENT, (client, handler, buf, responseSender) -> {
